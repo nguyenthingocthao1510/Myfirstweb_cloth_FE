@@ -51,6 +51,12 @@ function GridView() {
   const [sortType, setSortType] = useState("product_name");
   const [sortOrder, setSortOrder] = useState("asc");
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [isQuickViewOpen, setQuickViewOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedSize, setSelectedSize] = useState("");
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [availableSizes, setAvailableSizes] = useState([]);
+  const [availableColors, setAvailableColors] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -102,10 +108,36 @@ function GridView() {
 
     setFilteredProducts(updatedProducts);
   }, [products, filters]);
+  // Add these states
+  const [minPrice, setMinPrice] = useState(null);
+  const [maxPrice, setMaxPrice] = useState(null);
 
-  const sortProducts = (sortedProducts) => {
-    setFilteredProducts(sortedProducts);
+  // Add these functions
+  const handleMinPriceChange = (e) => {
+    setMinPrice(parseInt(e.target.value));
   };
+
+  const handleMaxPriceChange = (e) => {
+    setMaxPrice(parseInt(e.target.value));
+  };
+
+  const handlePriceFilter = () => {
+    if (minPrice !== null && maxPrice !== null) {
+      const filteredProducts = products.filter(
+        (product) => product.price >= minPrice && product.price <= maxPrice
+      );
+
+      setFilteredProducts(filteredProducts);
+    }
+  };
+
+  useEffect(() => {
+    const sizes = [...new Set(selectedProduct?.size.split(","))];
+    const colors = [...new Set(selectedProduct?.color.split(","))];
+
+    setAvailableSizes(sizes);
+    setAvailableColors(colors);
+  }, [selectedProduct]);
 
   const renderProducts = () => {
     if (loading) {
@@ -124,38 +156,101 @@ function GridView() {
     const endIndex = startIndex + recordsPerPage;
     const rowProducts = filteredProducts.slice(startIndex, endIndex);
 
+    if (rowProducts.length === 0) {
+      return <div>No products found.</div>;
+    }
+
     return (
-      <div style={{ display: "flex" }}>
-        {rowProducts.map((item) => (
-          <div key={item.id} className="qview">
-            <div className="imge">
-              <Slider {...settings}>
-                <div>
-                  <img src={item.picture_one} alt="product" />
+      <div>
+        <div>
+          <p id="cat">PRICE RANGE</p>
+          <div className="typeorsomethingelse">
+            <input
+              type="number"
+              placeholder="Min"
+              onChange={(e) => setMinPrice(parseInt(e.target.value))}
+            />
+            <input
+              type="number"
+              placeholder="Max"
+              onChange={(e) => setMaxPrice(parseInt(e.target.value))}
+            />
+            <button onClick={handlePriceFilter}>Apply</button>
+          </div>
+        </div>
+        <div style={{ display: "flex", marginRight: "-5%" }}>
+          {rowProducts.map((item) => (
+            <div key={item.id} className="qview">
+              <div className="imge">
+                <Slider {...settings}>
+                  <div>
+                    <img src={item.picture_one} alt="product" />
+                  </div>
+                  <div>
+                    <img src={item.picture_two} alt="product" />
+                  </div>
+                  <div>
+                    <img src={item.picture_three} alt="product" />
+                  </div>
+                </Slider>
+                <div className="info">
+                  <button
+                    className="btn-grid"
+                    onClick={() => {
+                      setQuickViewOpen(true);
+                      setSelectedProduct(item);
+                      setSelectedColor(null);
+                      setSelectedSize("");
+                    }}
+                  >
+                    Quick view
+                  </button>
                 </div>
-                <div>
-                  <img src={item.picture_two} alt="product" />
-                </div>
-                <div>
-                  <img src={item.picture_three} alt="product" />
-                </div>
-              </Slider>
-              <div className="info">
-                <button className="btn-grid">Quick view</button>
+              </div>
+              <div className="description">
+                <Link to={`/productdetail/${item.id}`}>
+                  <p id="name">Name: {item.product_name}</p>
+                </Link>
+                <Link to={`/productdetail/${item.id}`}>
+                  <p id="price">Price: {item.price}</p>
+                </Link>
               </div>
             </div>
-            <div className="description">
-              <Link to={`/productdetail/${item.id}`}>
-                <p id="name">Name: {item.product_name}</p>
-              </Link>
-              <Link to={`/productdetail/${item.id}`}>
-                <p id="price">Price: {item.price}</p>
-              </Link>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     );
+  };
+
+  const handleColorClick = (color) => {
+    setSelectedColor(color);
+  };
+
+  const handleSizeClick = (size) => {
+    setSelectedSize(size);
+  };
+
+  const addToCart = async () => {
+    try {
+      if (!selectedSize || !selectedColor || !selectedProduct) {
+        console.error("Size, color, and product must be selected.");
+        return;
+      }
+
+      const cartItem = {
+        name: selectedProduct.product_name,
+        type: selectedProduct.product_type,
+        price: selectedProduct.price,
+        quantity: 1,
+        size: selectedSize,
+        color: selectedColor,
+      };
+
+      console.log("Add to cart:", cartItem);
+      // You can add logic to update the shopping cart here
+    } catch (error) {
+      console.error("Error adding to cart:", error.message);
+    }
   };
 
   const prePage = () => {
@@ -177,8 +272,62 @@ function GridView() {
 
   return (
     <div>
-      <Linebar onCategoryChange={setFilters} onSortChange={sortProducts} />
+      {isQuickViewOpen && (
+        <div className="overlay">
+          <div className="popup">
+            {selectedProduct && (
+              <>
+                <h1>Name: {selectedProduct.product_name}</h1>
+                <p>Product Type: {selectedProduct.product_type}</p>
+                <p>Price : ${selectedProduct.price}</p>
+
+                <div>
+                  <p>Sizes: {availableSizes.join(", ")}</p>
+                  <p>Colors: {availableColors.join(", ")}</p>
+                </div>
+
+                <div>
+                  <label>Select Size:</label>
+                  <select onChange={(e) => handleSizeClick(e.target.value)}>
+                    <option value="">Select Size</option>
+                    {availableSizes.map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label>Select Color:</label>
+                  <select onChange={(e) => handleColorClick(e.target.value)}>
+                    <option value="">Select Color</option>
+                    {availableColors.map((color) => (
+                      <option key={color} value={color}>
+                        {color}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <button onClick={addToCart} style={{ background: "green" }}>
+                  Add to Cart
+                </button>
+
+                <button onClick={() => setQuickViewOpen(false)}>Close</button>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+      <Linebar
+        onCategoryChange={setFilters}
+        onSortChange={setFilteredProducts}
+      />
+
       <div className="quickviewpage">{renderProducts()}</div>
+
       <nav className="pagination" style={{ marginLeft: "40%" }}>
         <button className="page-link" onClick={prePage}>
           Prev

@@ -167,22 +167,6 @@ function Linebar({ onCategoryChange, onSortChange }) {
     }
   };
 
-  const handlePriceFilter = () => {
-    if (minPrice !== null && maxPrice !== null) {
-      const filteredProducts = api.filter(
-        (product) => product.price >= minPrice && product.price <= maxPrice
-      );
-
-      onCategoryChange({
-        selectedCategories: selected,
-        selectedColors: selectedColors,
-      });
-
-      let sortedProducts = applySorting(filteredProducts);
-      onSortChange(sortedProducts);
-    }
-  };
-
   useEffect(() => {
     const filteredProducts = api.filter((product) => {
       const categoryMatch = selected.includes(product.product_type);
@@ -230,7 +214,7 @@ function Linebar({ onCategoryChange, onSortChange }) {
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <span>
-              <Link to={`/productdetail/${encodeURIComponent(searchTerm)}`}>
+              <Link to={`/productname/${encodeURIComponent(searchTerm)}`}>
                 <button onClick={handleSearch}>
                   <i className="fa-solid fa-magnifying-glass"></i>
                 </button>
@@ -289,22 +273,6 @@ function Linebar({ onCategoryChange, onSortChange }) {
                 ) : (
                   <p>No colors available</p>
                 )}
-              </div>
-            </div>
-            <div>
-              <p id="cat">PRICE RANGE</p>
-              <div className="typeorsomethingelse">
-                <input
-                  type="number"
-                  placeholder="Min"
-                  onChange={(e) => setMinPrice(parseInt(e.target.value))}
-                />
-                <input
-                  type="number"
-                  placeholder="Max"
-                  onChange={(e) => setMaxPrice(parseInt(e.target.value))}
-                />
-                <button onClick={handlePriceFilter}>Apply</button>
               </div>
             </div>
           </div>

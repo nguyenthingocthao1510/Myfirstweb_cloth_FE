@@ -1,4 +1,5 @@
 /* gridview.css */
+
 .imge {
   position: relative;
   margin-bottom: 20px;
@@ -94,4 +95,75 @@ button:hover {
 .description #name  {
   font-weight: 100;
   font-size: 24px;
+}
+
+.qview-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Số này có thể thay đổi tùy theo trường hợp của bạn */
+}
+
+
+.qview-popup h1 {
+  color: white;
+}
+
+.qview-popup button {
+  padding: 15px;
+  background-color: red;
+  color: white;
+  font-size: 18px;
+  border: 0;
+  outline: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 20px;
+}
+
+/* Thêm vào cuối file gridview.css */
+
+/* Overlay của Popup */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Popup */
+.popup {
+  background-color: #fff; /* Màu nền của Popup */
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.popup h1 {
+  color: #333; /* Màu chữ cho tiêu đề */
+}
+
+.popup button {
+  padding: 10px;
+  background-color: red;
+  color: white;
+  font-size: 16px;
+  border: 0;
+  outline: none;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-top: 20px;
+  margin-right: 5%;
 }

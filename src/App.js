@@ -26,6 +26,8 @@ import ViewOrder from "./components/OrderManage/Vieworder";
 import ListProduct from "./components/Product-Admin/ListProduct";
 import OrderDetail from "./components/OrderManage/Orderdetail";
 import ViewOrderDetail from "./components/OrderManage/Vieworderdetail";
+import ProductByName from "./components/Product/productbyname";
+
 function App() {
   return (
     <Router>
@@ -41,8 +43,8 @@ function App() {
             element={[<Header />, <Productdetail />, <Footer />]}
           />
           <Route
-            path="/productdetail/:product_name"
-            element={[<Header />, <Productdetail />, <Footer />]}
+            path="/productname/:product_name"
+            element={[<Header />, <ProductByName />, <Footer />]}
           />
           <Route path="/cart/:user_id" element={[<Cart />]} exact></Route>
           <Route path="/Blog" element={[<BlogList />]} exact></Route>

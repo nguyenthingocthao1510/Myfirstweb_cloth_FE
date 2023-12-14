@@ -28,7 +28,10 @@ export const ViewProductById = async (id) => {
 };
 
 export const ViewProductByName = async (product_name) => {
-  return await axios.get(`${backendUrl}/api/productdetail/${product_name}`, {
-    headers: getAuthHeaders(),
-  });
+  return await axios.get(
+    `${backendUrl}/api/productsearchname/${product_name}`,
+    {
+      headers: getAuthHeaders(),
+    }
+  );
 };
